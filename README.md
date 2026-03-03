@@ -14,8 +14,9 @@ RetroGrade is a powerful, cross-platform desktop application for decompiling And
 - **Modern Code Editor**: Built-in Monaco editor with Java/Kotlin syntax highlighting
 - **File Explorer**: Navigate decompiled code with a familiar tree structure
 - **Search Functionality**: Find code across all decompiled files instantly
-- **Project Export**: Export as Android Studio-compatible project structure
-- **Glassmorphism UI**: Beautiful, modern interface with transparency effects
+- **Android Studio Export**: Build ready-to-open Android Studio projects with proper Gradle configuration
+- **Dart Recovery Assistant**: Analyze Flutter/Dart apps with type inference, pattern matching, and code generation
+- **Glassmorphism UI**: Beautiful Windows Aero-style transparency with frosted glass effects
 - **Cross-Platform**: Runs on Windows 11 and macOS
 - **Standalone**: Includes bundled Java Runtime - no additional installations required
 
@@ -64,7 +65,16 @@ npm run dist:mac    # macOS
 3. **Explore Code**: Use the file explorer on the left to navigate the decompiled structure
 4. **View Files**: Click on any file to view its contents in the code editor
 5. **Search**: Use the search panel to find specific code across all files
-6. **Export**: Click "Export Project" to save the decompiled code to your computer
+6. **Build Project**: Click "Build Android Studio Project" to create a ready-to-open AS project
+
+### Android Studio Integration
+
+RetroGrade can generate fully configured Android Studio projects:
+- Automatically parses `AndroidManifest.xml` for package name, SDK versions, and app name
+- Detects Flutter apps and adds appropriate dependencies
+- Copies native libraries (.so files) to jniLibs folders
+- Generates proper `build.gradle` with detected features (Maps, Firebase, Room, etc.)
+- Opens Android Studio automatically when project is ready
 
 ## Technology Stack
 
@@ -81,20 +91,30 @@ npm run dist:mac    # macOS
 ```
 retrograde/
 ├── src/
-│   ├── main/           # Electron main process
-│   │   ├── main.ts     # Application entry point
-│   │   ├── preload.ts  # Secure bridge to renderer
-│   │   ├── decompiler.ts # APK decompilation logic
-│   │   └── axmlParser.ts # Android binary XML parser
-│   └── renderer/       # React frontend
-│       ├── components/ # UI components
-│       ├── store/      # Zustand state management
-│       ├── styles/     # CSS styles
-│       └── icons/      # SVG icon components
-├── jadx/               # Bundled jadx decompiler
-├── jre/                # Bundled Java Runtime Environment
-├── build/              # Build output
-└── assets/             # Application icons
+│   ├── main/                # Electron main process
+│   │   ├── main.ts          # Application entry point
+│   │   ├── preload.ts       # Secure bridge to renderer
+│   │   ├── decompiler.ts    # APK decompilation logic
+│   │   ├── axmlParser.ts    # Android binary XML parser
+│   │   ├── androidStudioBuilder.ts  # AS project generator
+│   │   └── dartRecovery/    # Dart Recovery Assistant Library
+│   │       ├── index.ts     # Main entry point
+│   │       ├── types.ts     # Type definitions
+│   │       ├── typeInference.ts    # Type inference engine
+│   │       ├── patternMatcher.ts   # Flutter pattern detection
+│   │       ├── symbolRecovery.ts   # Symbol extraction
+│   │       ├── pseudoCParser.ts    # Ghidra output parser
+│   │       ├── dartGenerator.ts    # Dart code generation
+│   │       └── flutterPatterns.ts  # Flutter framework patterns
+│   └── renderer/            # React frontend
+│       ├── components/      # UI components
+│       ├── store/           # Zustand state management
+│       ├── styles/          # CSS styles
+│       └── icons/           # SVG icon components
+├── jadx/                    # Bundled jadx decompiler
+├── jre/                     # Bundled Java Runtime Environment
+├── build/                   # Build output
+└── assets/                  # Application icons
 ```
 
 ## Contributing
@@ -122,8 +142,8 @@ RetroGrade bundles the following open-source components:
 
 ## Credits
 
-**Developer**: [Luncan Alex](https://www.linkedin.com/in/alexluncan/)
+**Developer**: [Luncan Alex](https://luncanalex.dev/)
 
 ---
 
-Made with dedication by [Luncan Alex](https://www.linkedin.com/in/alexluncan/)
+Made with dedication by [Luncan Alex](https://luncanalex.dev/)
