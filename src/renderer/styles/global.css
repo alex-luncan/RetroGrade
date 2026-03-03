@@ -22,8 +22,10 @@
 
   /* Glass Material */
   --glass-bg: rgba(51, 51, 51, 0.8);
+  --glass-bg-light: rgba(70, 70, 85, 0.75);
   --glass-blur: 25px;
-  --glass-border: rgba(255, 255, 255, 0.1);
+  --glass-border: rgba(255, 255, 255, 0.12);
+  --glass-highlight: rgba(255, 255, 255, 0.05);
 
   /* Opaque Material */
   --opaque-bg: #222222;

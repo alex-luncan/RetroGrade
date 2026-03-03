@@ -6,6 +6,26 @@
   <meta http-equiv="Content-Security-Policy" content="default-src 'self'; script-src 'self' 'unsafe-eval' 'unsafe-inline' blob:; style-src 'self' 'unsafe-inline'; font-src 'self' data:; img-src 'self' data:;">
   <title>RetroGrade - APK Decompiler</title>
   <script>window.global = window;</script>
+  <script>
+    // Prevent Electron's default file drop behavior globally
+    // This must run before React to allow custom drag-drop handling
+    // Don't stopPropagation so React handlers still receive events
+    document.addEventListener('dragover', function(e) {
+      e.preventDefault();
+      if (e.dataTransfer) {
+        e.dataTransfer.dropEffect = 'copy';
+      }
+    });
+    document.addEventListener('drop', function(e) {
+      e.preventDefault();
+    });
+    document.addEventListener('dragenter', function(e) {
+      e.preventDefault();
+    });
+    document.addEventListener('dragleave', function(e) {
+      e.preventDefault();
+    });
+  </script>
   <style>
     html, body, #root {
       margin: 0;

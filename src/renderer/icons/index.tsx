@@ -114,6 +114,16 @@ export const KotlinFileIcon: React.FC<IconProps> = ({ size = 24, className }) =>
   </svg>
 );
 
+// Android Studio icon
+export const AndroidStudioIcon: React.FC<IconProps> = ({ size = 24, className }) => (
+  <svg width={size} height={size} viewBox="0 0 24 24" fill="none" className={className}>
+    <path d="M6 2C4.89 2 4 2.89 4 4V20C4 21.11 4.89 22 6 22H18C19.11 22 20 21.11 20 20V4C20 2.89 19.11 2 18 2H6ZM6 4H18V8H6V4ZM6 10H18V20H6V10Z" fill="#3DDC84"/>
+    <path d="M12 11L8 15H10.5V19H13.5V15H16L12 11Z" fill="#3DDC84"/>
+    <circle cx="9" cy="6" r="1" fill="white"/>
+    <circle cx="15" cy="6" r="1" fill="white"/>
+  </svg>
+);
+
 // APK icon for the home screen
 export const ApkIcon: React.FC<IconProps> = ({ size = 64, className }) => (
   <svg width={size} height={size} viewBox="0 0 64 64" fill="none" className={className}>

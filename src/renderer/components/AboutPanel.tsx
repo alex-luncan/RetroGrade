@@ -30,7 +30,7 @@ const AboutPanel: React.FC = () => {
             <div className="about-developer-name">
               <a
                 href="#"
-                onClick={handleLinkClick('https://www.linkedin.com/in/alexluncan/')}
+                onClick={handleLinkClick('https://luncanalex.dev/')}
               >
                 Luncan Alex
               </a>

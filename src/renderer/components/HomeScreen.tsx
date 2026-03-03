@@ -1,4 +1,4 @@
-import React, { useState, useCallback } from 'react';
+import React, { useState, useCallback, useEffect } from 'react';
 import { useAppStore } from '../store/appStore';
 import { ApkIcon, UploadIcon } from '../icons';
 
@@ -13,6 +13,27 @@ const HomeScreen: React.FC = () => {
     setDecompileResult,
     setError
   } = useAppStore();
+
+  // Prevent default drag behavior on the entire window
+  useEffect(() => {
+    const preventDefaults = (e: DragEvent) => {
+      e.preventDefault();
+      e.stopPropagation();
+    };
+
+    // Prevent default behavior for all drag events on the document
+    document.addEventListener('dragenter', preventDefaults);
+    document.addEventListener('dragover', preventDefaults);
+    document.addEventListener('dragleave', preventDefaults);
+    document.addEventListener('drop', preventDefaults);
+
+    return () => {
+      document.removeEventListener('dragenter', preventDefaults);
+      document.removeEventListener('dragover', preventDefaults);
+      document.removeEventListener('dragleave', preventDefaults);
+      document.removeEventListener('drop', preventDefaults);
+    };
+  }, []);
 
   const handleDecompile = useCallback(async (filePath: string) => {
     setError(null);
@@ -33,16 +54,34 @@ const HomeScreen: React.FC = () => {
     }
   }, [setDecompiling, setDecompileResult, setError]);
 
+  const handleDragEnter = useCallback((e: React.DragEvent) => {
+    e.preventDefault();
+    e.stopPropagation();
+    if (e.dataTransfer.types.includes('Files')) {
+      setIsDragging(true);
+    }
+  }, []);
+
   const handleDragOver = useCallback((e: React.DragEvent) => {
     e.preventDefault();
     e.stopPropagation();
-    setIsDragging(true);
+    // Set dropEffect to indicate drop is allowed
+    e.dataTransfer.dropEffect = 'copy';
+    if (e.dataTransfer.types.includes('Files')) {
+      setIsDragging(true);
+    }
   }, []);
 
   const handleDragLeave = useCallback((e: React.DragEvent) => {
     e.preventDefault();
     e.stopPropagation();
-    setIsDragging(false);
+    // Only set isDragging to false if we're leaving the drop zone entirely
+    const rect = e.currentTarget.getBoundingClientRect();
+    const x = e.clientX;
+    const y = e.clientY;
+    if (x < rect.left || x >= rect.right || y < rect.top || y >= rect.bottom) {
+      setIsDragging(false);
+    }
   }, []);
 
   const handleDrop = useCallback((e: React.DragEvent) => {
@@ -54,14 +93,19 @@ const HomeScreen: React.FC = () => {
     const apkFile = files.find(f => f.name.toLowerCase().endsWith('.apk'));
 
     if (apkFile) {
-      // In Electron, we can get the file path from the dropped file
-      const filePath = (apkFile as any).path;
-      if (filePath) {
-        handleDecompile(filePath);
-      } else {
+      // Use Electron's webUtils to get the file path (required with contextIsolation)
+      try {
+        const filePath = window.electronAPI.getPathForFile(apkFile);
+        if (filePath) {
+          handleDecompile(filePath);
+        } else {
+          setError('Could not get file path. Please use the Browse button instead.');
+        }
+      } catch (err) {
+        console.error('Error getting file path:', err);
         setError('Could not get file path. Please use the Browse button instead.');
       }
-    } else {
+    } else if (files.length > 0) {
       setError('Please drop a valid APK file.');
     }
   }, [handleDecompile, setError]);
@@ -80,7 +124,13 @@ const HomeScreen: React.FC = () => {
   }, [isDecompiling, handleBrowse]);
 
   return (
-    <div className="home-screen">
+    <div
+      className="home-screen"
+      onDragEnter={handleDragEnter}
+      onDragOver={handleDragOver}
+      onDragLeave={handleDragLeave}
+      onDrop={handleDrop}
+    >
       <div className="home-content">
         <div className="home-logo">
           <ApkIcon size={80} />
@@ -91,9 +141,6 @@ const HomeScreen: React.FC = () => {
 
         <div
           className={`drop-zone ${isDragging ? 'dragging' : ''}`}
-          onDragOver={handleDragOver}
-          onDragLeave={handleDragLeave}
-          onDrop={handleDrop}
           onClick={handleDropZoneClick}
         >
           <div className="drop-zone-icon">
@@ -139,7 +186,7 @@ const HomeScreen: React.FC = () => {
           href="#"
           onClick={(e) => {
             e.preventDefault();
-            window.electronAPI.openExternal('https://www.linkedin.com/in/alexluncan/');
+            window.electronAPI.openExternal('https://luncanalex.dev/');
           }}
         >
           Luncan Alex

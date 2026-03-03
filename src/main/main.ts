@@ -3,9 +3,11 @@ import * as path from 'path';
 import * as fs from 'fs';
 import { DecompilerService } from './decompiler';
 import { parseAXML, isBinaryXml } from './axmlParser';
+import { AndroidStudioBuilder } from './androidStudioBuilder';
 
 let mainWindow: BrowserWindow | null = null;
 let decompilerService: DecompilerService;
+let androidStudioBuilder: AndroidStudioBuilder;
 
 function createWindow(): void {
   const isMac = process.platform === 'darwin';
@@ -31,7 +33,8 @@ function createWindow(): void {
     webPreferences: {
       nodeIntegration: false,
       contextIsolation: true,
-      preload: path.join(__dirname, 'preload.js')
+      preload: path.join(__dirname, 'preload.js'),
+      navigateOnDragDrop: false
     }
   });
 
@@ -39,6 +42,14 @@ function createWindow(): void {
   mainWindow.once('ready-to-show', () => {
     mainWindow?.show();
     mainWindow?.focus();
+  });
+
+  // Prevent default drag-drop behavior (navigation to dropped file)
+  mainWindow.webContents.on('will-navigate', (event, url) => {
+    // Prevent navigation from file drops
+    if (url.startsWith('file://')) {
+      event.preventDefault();
+    }
   });
 
   // Load the renderer
@@ -67,6 +78,7 @@ function initServices(): void {
   console.log('JRE path:', jrePath);
 
   decompilerService = new DecompilerService(jadxPath, jrePath);
+  androidStudioBuilder = new AndroidStudioBuilder();
 }
 
 // IPC Handlers
@@ -165,6 +177,22 @@ ipcMain.handle('export:project', async (event, outputPath: string, files: any[])
   } catch (error) {
     return { success: false, error: (error as Error).message };
   }
+});
+
+ipcMain.handle('build:androidStudio', async (event, projectInfo: any) => {
+  try {
+    const projectDir = await androidStudioBuilder.buildProject(projectInfo, (progress) => {
+      mainWindow?.webContents.send('build:progress', progress);
+    });
+    return { success: true, projectDir };
+  } catch (error) {
+    return { success: false, error: (error as Error).message };
+  }
+});
+
+ipcMain.handle('androidStudio:find', async () => {
+  const studioPath = await androidStudioBuilder.findAndroidStudio();
+  return { found: !!studioPath, path: studioPath };
 });
 
 ipcMain.handle('shell:openExternal', async (event, url: string) => {

@@ -9,13 +9,33 @@
 /* Sidebar */
 .sidebar {
   width: var(--sidebar-width);
-  background: var(--opaque-bg);
+  background: linear-gradient(
+    180deg,
+    rgba(40, 40, 55, 0.95) 0%,
+    rgba(30, 30, 45, 0.92) 100%
+  );
+  backdrop-filter: blur(20px) saturate(180%);
+  -webkit-backdrop-filter: blur(20px) saturate(180%);
   border-right: 1px solid var(--glass-border);
+  box-shadow: inset 1px 0 0 0 rgba(255, 255, 255, 0.03);
   display: flex;
   flex-direction: column;
   align-items: center;
   padding: 12px 0;
   gap: 8px;
+  position: relative;
+}
+
+.sidebar::before {
+  content: '';
+  position: absolute;
+  inset: 0;
+  background: linear-gradient(
+    135deg,
+    rgba(255, 255, 255, 0.03) 0%,
+    transparent 50%
+  );
+  pointer-events: none;
 }
 
 .sidebar-btn {
@@ -46,11 +66,33 @@
 /* Panel Area */
 .panel-area {
   width: var(--panel-width);
-  background: var(--glass-bg);
+  background: linear-gradient(
+    180deg,
+    rgba(45, 45, 60, 0.92) 0%,
+    rgba(35, 35, 50, 0.88) 100%
+  );
+  backdrop-filter: blur(25px) saturate(180%);
+  -webkit-backdrop-filter: blur(25px) saturate(180%);
   border-right: 1px solid var(--glass-border);
+  box-shadow:
+    inset 1px 0 0 0 rgba(255, 255, 255, 0.04),
+    inset 0 1px 0 0 rgba(255, 255, 255, 0.02);
   display: flex;
   flex-direction: column;
   overflow: hidden;
+  position: relative;
+}
+
+.panel-area::before {
+  content: '';
+  position: absolute;
+  inset: 0;
+  background: linear-gradient(
+    135deg,
+    rgba(255, 255, 255, 0.02) 0%,
+    transparent 40%
+  );
+  pointer-events: none;
 }
 
 .panel-header {
@@ -86,8 +128,15 @@
   height: 36px;
   display: flex;
   align-items: stretch;
-  background: var(--glass-bg);
+  background: linear-gradient(
+    180deg,
+    rgba(50, 50, 65, 0.9) 0%,
+    rgba(40, 40, 55, 0.85) 100%
+  );
+  backdrop-filter: blur(20px) saturate(150%);
+  -webkit-backdrop-filter: blur(20px) saturate(150%);
   border-bottom: 1px solid var(--glass-border);
+  box-shadow: inset 0 1px 0 0 rgba(255, 255, 255, 0.03);
   overflow-x: auto;
 }
 
@@ -171,7 +220,13 @@
   display: flex;
   align-items: center;
   gap: 24px;
-  background: var(--glass-bg);
+  background: linear-gradient(
+    180deg,
+    rgba(40, 40, 55, 0.85) 0%,
+    rgba(35, 35, 50, 0.9) 100%
+  );
+  backdrop-filter: blur(15px);
+  -webkit-backdrop-filter: blur(15px);
   border-top: 1px solid var(--glass-border);
   font-size: 11px;
   color: var(--white-40);
@@ -489,4 +544,42 @@
 .panel-actions {
   padding: 12px;
   border-top: 1px solid var(--glass-border);
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+}
+
+/* Android Studio Button */
+.android-studio-btn {
+  background: #3DDC84;
+}
+
+.android-studio-btn:hover {
+  background: #32cb73;
+}
+
+.android-studio-btn:disabled {
+  background: #2a8a52;
+  cursor: not-allowed;
+  opacity: 0.7;
+}
+
+.export-button:disabled {
+  opacity: 0.6;
+  cursor: not-allowed;
+}
+
+/* Build Progress Bar */
+.build-progress-bar {
+  height: 4px;
+  background: var(--white-10);
+  border-radius: 2px;
+  overflow: hidden;
+  margin-top: 4px;
+}
+
+.build-progress-fill {
+  height: 100%;
+  background: #3DDC84;
+  transition: width 0.3s ease;
 }

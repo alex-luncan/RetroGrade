@@ -1,4 +1,4 @@
-import React, { useCallback } from 'react';
+import React, { useCallback, useState, useEffect } from 'react';
 import { useAppStore, FileNode } from '../store/appStore';
 import {
   FolderIcon,
@@ -8,7 +8,8 @@ import {
   XmlFileIcon,
   KotlinFileIcon,
   ArrowRightIcon,
-  ExportIcon
+  ExportIcon,
+  AndroidStudioIcon
 } from '../icons';
 
 interface TreeNodeProps {
@@ -130,7 +131,16 @@ const TreeNode: React.FC<TreeNodeProps> = ({ node, depth }) => {
 };
 
 const FileExplorer: React.FC = () => {
-  const { decompileResult } = useAppStore();
+  const { decompileResult, setError } = useAppStore();
+  const [isBuilding, setIsBuilding] = useState(false);
+  const [buildProgress, setBuildProgress] = useState({ percent: 0, message: '' });
+
+  useEffect(() => {
+    const unsubscribe = window.electronAPI.onBuildProgress((progress) => {
+      setBuildProgress({ percent: progress.percent, message: progress.message });
+    });
+    return unsubscribe;
+  }, []);
 
   const handleExport = useCallback(async () => {
     const outputPath = await window.electronAPI.selectFolderDialog();
@@ -139,6 +149,44 @@ const FileExplorer: React.FC = () => {
       console.log('Exporting to:', outputPath);
     }
   }, [decompileResult]);
+
+  const handleBuildAndroidStudio = useCallback(async () => {
+    if (!decompileResult || isBuilding) return;
+
+    const outputPath = await window.electronAPI.selectFolderDialog();
+    if (!outputPath) return;
+
+    setIsBuilding(true);
+    setBuildProgress({ percent: 0, message: 'Starting...' });
+
+    try {
+      const result = await window.electronAPI.buildAndroidStudioProject({
+        packageName: decompileResult.packageName,
+        appName: decompileResult.appName,
+        versionName: decompileResult.versionName,
+        versionCode: decompileResult.versionCode,
+        minSdk: decompileResult.minSdk,
+        targetSdk: decompileResult.targetSdk,
+        decompileOutputPath: decompileResult.outputPath, // Where decompiled files are (temp)
+        targetOutputPath: outputPath, // Where user wants the project created
+      });
+
+      if (result.success) {
+        // Check if Android Studio was found
+        const studioCheck = await window.electronAPI.findAndroidStudio();
+        if (!studioCheck.found) {
+          setError('Project created successfully! Android Studio not found - please open the project manually at: ' + result.projectDir);
+        }
+      } else {
+        setError(result.error || 'Failed to build Android Studio project');
+      }
+    } catch (err) {
+      setError((err as Error).message);
+    } finally {
+      setIsBuilding(false);
+      setBuildProgress({ percent: 0, message: '' });
+    }
+  }, [decompileResult, isBuilding, setError]);
 
   return (
     <>
@@ -149,10 +197,26 @@ const FileExplorer: React.FC = () => {
         )}
       </div>
       <div className="panel-actions">
-        <button className="export-button" onClick={handleExport}>
+        <button className="export-button" onClick={handleExport} disabled={isBuilding}>
           <ExportIcon size={16} />
           Export Project
         </button>
+        <button
+          className="export-button android-studio-btn"
+          onClick={handleBuildAndroidStudio}
+          disabled={isBuilding}
+        >
+          <AndroidStudioIcon size={16} />
+          {isBuilding ? buildProgress.message || 'Building...' : 'Build Android Studio Project'}
+        </button>
+        {isBuilding && (
+          <div className="build-progress-bar">
+            <div
+              className="build-progress-fill"
+              style={{ width: `${buildProgress.percent}%` }}
+            />
+          </div>
+        )}
       </div>
     </>
   );
