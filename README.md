@@ -20,23 +20,7 @@ RetroGrade is a powerful, cross-platform desktop application for decompiling And
 - **Cross-Platform**: Runs on Windows 11 and macOS
 - **Standalone**: Includes bundled Java Runtime - no additional installations required
 
-## Installation
-
-### Windows
-
-1. Download `RetroGrade Setup 1.0.0.exe` from the [Releases](https://github.com/alex-luncan/RetroGrade/releases) page
-2. Run the installer and follow the prompts
-3. Launch RetroGrade from the Start menu
-
-Alternatively, download the portable version `RetroGrade 1.0.0.exe` that runs without installation.
-
-### macOS
-
-1. Download `RetroGrade-1.0.0.dmg` from the [Releases](https://github.com/alex-luncan/RetroGrade/releases) page
-2. Open the DMG and drag RetroGrade to your Applications folder
-3. Launch from Applications
-
-### Building from Source
+## Building from Source
 
 ```bash
 # Clone the repository
