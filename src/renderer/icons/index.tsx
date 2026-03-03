@@ -124,14 +124,14 @@ export const AndroidStudioIcon: React.FC<IconProps> = ({ size = 24, className })
   </svg>
 );
 
-// APK icon for the home screen
+// APK icon for the home screen - using new logo
 export const ApkIcon: React.FC<IconProps> = ({ size = 64, className }) => (
-  <svg width={size} height={size} viewBox="0 0 64 64" fill="none" className={className}>
-    <rect x="8" y="4" width="48" height="56" rx="4" fill="#3DDC84"/>
-    <circle cx="24" cy="20" r="4" fill="white"/>
-    <circle cx="40" cy="20" r="4" fill="white"/>
-    <path d="M20 32C20 32 24 40 32 40C40 40 44 32 44 32" stroke="white" strokeWidth="3" strokeLinecap="round"/>
-    <path d="M16 8L20 16" stroke="white" strokeWidth="2" strokeLinecap="round"/>
-    <path d="M48 8L44 16" stroke="white" strokeWidth="2" strokeLinecap="round"/>
-  </svg>
+  <img
+    src={new URL('../assets/logo.png', import.meta.url).href}
+    alt="RetroGrade Logo"
+    width={size}
+    height={size}
+    className={className}
+    style={{ objectFit: 'contain' }}
+  />
 );
