@@ -1,3 +1,11 @@
+# Claude Code / AI assistant files
+
+# Design source files (not for distribution)
+design/
+
+# Windows artifacts
+nul
+
 # Dependencies
 node_modules/
 
