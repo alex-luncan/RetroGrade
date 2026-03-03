@@ -17,6 +17,7 @@ RetroGrade is a powerful, cross-platform desktop application for decompiling And
 - **Project Export**: Export as Android Studio-compatible project structure
 - **Glassmorphism UI**: Beautiful, modern interface with transparency effects
 - **Cross-Platform**: Runs on Windows 11 and macOS
+- **Standalone**: Includes bundled Java Runtime - no additional installations required
 
 ## Installation
 
@@ -52,6 +53,8 @@ npm run dist:win    # Windows
 npm run dist:mac    # macOS
 ```
 
+**Note:** Building from source requires [Git LFS](https://git-lfs.github.com/) to download the bundled jadx and JRE files.
+
 ## Usage
 
 ### Basic Workflow
@@ -63,23 +66,14 @@ npm run dist:mac    # macOS
 5. **Search**: Use the search panel to find specific code across all files
 6. **Export**: Click "Export Project" to save the decompiled code to your computer
 
-### Enhanced Decompilation
-
-For best results with Java/Kotlin source code recovery, install jadx:
-
-1. Download [jadx](https://github.com/skylot/jadx/releases) (requires Java Runtime)
-2. Extract to the `jadx` folder in the RetroGrade installation directory
-3. Restart RetroGrade
-
-Without jadx, RetroGrade will still extract and display all resources (XML layouts, strings, images, assets).
-
 ## Technology Stack
 
 - **Framework**: Electron 33
 - **Frontend**: React 18 + TypeScript
 - **Code Editor**: Monaco Editor (VS Code engine)
 - **State Management**: Zustand
-- **Decompilation**: JSZip + jadx (optional)
+- **Decompilation**: jadx (bundled)
+- **Java Runtime**: Eclipse Temurin JRE 17 (bundled)
 - **Build**: electron-builder
 
 ## Project Structure
@@ -90,15 +84,17 @@ retrograde/
 │   ├── main/           # Electron main process
 │   │   ├── main.ts     # Application entry point
 │   │   ├── preload.ts  # Secure bridge to renderer
-│   │   └── decompiler.ts # APK decompilation logic
+│   │   ├── decompiler.ts # APK decompilation logic
+│   │   └── axmlParser.ts # Android binary XML parser
 │   └── renderer/       # React frontend
 │       ├── components/ # UI components
 │       ├── store/      # Zustand state management
 │       ├── styles/     # CSS styles
 │       └── icons/      # SVG icon components
-├── design/             # UI mockups and assets
+├── jadx/               # Bundled jadx decompiler
+├── jre/                # Bundled Java Runtime Environment
 ├── build/              # Build output
-└── jadx/               # Optional jadx binaries
+└── assets/             # Application icons
 ```
 
 ## Contributing
@@ -115,15 +111,18 @@ Contributions are welcome! Please feel free to submit a Pull Request.
 
 This project is licensed under the MIT License - see the [LICENSE](LICENSE) file for details.
 
+### Third-Party Licenses
+
+RetroGrade bundles the following open-source components:
+
+- **[jadx](https://github.com/skylot/jadx)** - Dex to Java decompiler by skylot (Apache License 2.0)
+- **[Eclipse Temurin](https://adoptium.net/)** - Java Runtime Environment (GPLv2 with Classpath Exception)
+- **[Monaco Editor](https://microsoft.github.io/monaco-editor/)** - Code editor by Microsoft (MIT License)
+- **[Electron](https://www.electronjs.org/)** - Desktop application framework (MIT License)
+
 ## Credits
 
 **Developer**: [Luncan Alex](https://www.linkedin.com/in/alexluncan/)
-
-### Acknowledgments
-
-- [jadx](https://github.com/skylot/jadx) - Dex to Java decompiler
-- [Monaco Editor](https://microsoft.github.io/monaco-editor/) - The code editor that powers VS Code
-- [Electron](https://www.electronjs.org/) - Cross-platform desktop framework
 
 ---
 

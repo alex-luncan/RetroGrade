@@ -16,6 +16,7 @@ This document provides comprehensive documentation for the RetroGrade APK Decomp
 8. [API Reference](#api-reference)
 9. [Troubleshooting](#troubleshooting)
 10. [Development Guide](#development-guide)
+11. [Third-Party Licenses](#third-party-licenses)
 
 ---
 
@@ -26,10 +27,11 @@ RetroGrade is a desktop application designed to decompile Android APK files into
 ### Key Capabilities
 
 - **APK Extraction**: Unpack APK files (which are ZIP archives) to access all contents
-- **Bytecode Decompilation**: Convert DEX (Dalvik Executable) files to Java source code
+- **Bytecode Decompilation**: Convert DEX (Dalvik Executable) files to Java source code using bundled jadx
 - **Resource Decoding**: Parse and display Android resources including XML layouts, string resources, and the AndroidManifest.xml
 - **Code Viewing**: Professional code editor with syntax highlighting for Java, Kotlin, and XML
 - **Project Export**: Export decompiled code as an Android Studio-compatible project
+- **Standalone Operation**: Includes bundled Java Runtime - no additional installations required
 
 ---
 
@@ -53,10 +55,14 @@ RetroGrade is a desktop application designed to decompile Android APK files into
 | Storage | 2 GB free space | 2 GB free space |
 | Display | 1920x1080 resolution | 1920x1080 resolution |
 
-### Optional Dependencies
+### Bundled Components
 
-- **Java Runtime Environment (JRE) 11+**: Required only if using jadx for enhanced decompilation
-- **jadx 1.4+**: For full Java/Kotlin source code recovery
+RetroGrade includes all required dependencies:
+
+- **jadx 1.5.0**: DEX to Java decompiler
+- **Eclipse Temurin JRE 17**: Java Runtime Environment
+
+No additional software installation is required.
 
 ---
 
@@ -84,16 +90,6 @@ RetroGrade is a desktop application designed to decompile Android APK files into
 3. Drag RetroGrade.app to Applications folder
 4. On first launch, right-click and select "Open" to bypass Gatekeeper
 5. Click "Open" in the confirmation dialog
-
-### Installing jadx for Enhanced Decompilation
-
-1. Download jadx from https://github.com/skylot/jadx/releases
-2. Extract the ZIP file
-3. Copy the extracted folder to:
-   - Windows: `C:\Program Files\RetroGrade\jadx\` or `<portable_dir>\jadx\`
-   - macOS: `/Applications/RetroGrade.app/Contents/Resources/jadx/`
-4. Ensure the `bin` folder contains `jadx.bat` (Windows) or `jadx` (macOS)
-5. Restart RetroGrade
 
 ---
 
@@ -159,12 +155,13 @@ The editor screen appears after successful decompilation.
 **Process:**
 1. APK is extracted as a ZIP archive
 2. AndroidManifest.xml is parsed for app metadata
-3. If jadx is available, DEX files are decompiled to Java/Kotlin
-4. Resources (res/, assets/) are extracted
-5. File tree is generated for navigation
+3. DEX files are decompiled to Java/Kotlin using bundled jadx
+4. Binary XML files are decoded using built-in AXML parser
+5. Resources (res/, assets/) are extracted
+6. File tree is generated for navigation
 
 **Supported File Types:**
-- `.dex` - Dalvik bytecode (requires jadx for decompilation)
+- `.dex` - Dalvik bytecode (decompiled to Java)
 - `.xml` - Android XML resources (binary format decoded)
 - `.png`, `.jpg`, `.webp` - Image assets
 - `.json`, `.txt` - Text files
@@ -225,7 +222,7 @@ ExportedProject/
 | Setting | Default | Description |
 |---------|---------|-------------|
 | Show Bad Code | Yes | Display partially decompiled code |
-| Decompiler | jadx (if available) | Decompilation engine |
+| Decompiler | jadx | Decompilation engine (bundled) |
 
 *Note: Settings are currently read-only in version 1.0.0. Full configuration will be available in a future release.*
 
@@ -241,6 +238,8 @@ ExportedProject/
 | Frontend | React 18 + TypeScript |
 | State Management | Zustand |
 | Code Editor | Monaco Editor |
+| Decompiler | jadx 1.5.0 (bundled) |
+| Java Runtime | Eclipse Temurin JRE 17 (bundled) |
 | Styling | CSS Modules + CSS Variables |
 | Build | Webpack + electron-builder |
 
@@ -251,6 +250,7 @@ ExportedProject/
 - Native file system access
 - Window management
 - IPC handling
+- Decompilation coordination
 
 **Renderer Process (`src/renderer/`):**
 - React user interface
@@ -331,11 +331,6 @@ interface DecompileResult {
 - Try using the Browse button instead
 - Ensure the file is a local file, not from a network location
 
-**Decompilation produces no Java files:**
-- Install jadx for full source code recovery
-- Ensure jadx is in the correct location
-- Check that Java Runtime is installed
-
 **Application won't start on macOS:**
 - Right-click the app and select "Open"
 - Go to System Preferences > Security & Privacy and allow the app
@@ -344,12 +339,16 @@ interface DecompileResult {
 - Very large APKs (100MB+) may take several minutes
 - Consider closing other applications to free memory
 
+**Binary XML files showing garbage:**
+- RetroGrade includes a built-in AXML parser for binary XML
+- If parsing fails, the file may be corrupted or in an unsupported format
+
 ### Error Messages
 
 | Error | Cause | Solution |
 |-------|-------|----------|
 | "Invalid APK file" | File is not a valid APK | Ensure file has .apk extension and is not corrupted |
-| "jadx not found" | jadx not installed | Install jadx for enhanced decompilation |
+| "jadx exited with code X" | Decompilation failed | Try a different APK; some obfuscated APKs may not decompile |
 | "Out of memory" | APK too large | Increase system memory or try smaller APK |
 
 ---
@@ -359,9 +358,10 @@ interface DecompileResult {
 ### Setting Up Development Environment
 
 ```bash
-# Prerequisites: Node.js 20+, npm 10+
+# Prerequisites: Node.js 20+, npm 10+, Git LFS
 
-# Clone repository
+# Clone repository (Git LFS required for large files)
+git lfs install
 git clone https://github.com/alex-luncan/RetroGrade.git
 cd RetroGrade
 
@@ -393,7 +393,8 @@ retrograde/
 │   ├── main/                    # Main process
 │   │   ├── main.ts             # Entry point, window creation
 │   │   ├── preload.ts          # Context bridge
-│   │   └── decompiler.ts       # Decompilation logic
+│   │   ├── decompiler.ts       # Decompilation logic
+│   │   └── axmlParser.ts       # Android binary XML parser
 │   └── renderer/               # Renderer process
 │       ├── App.tsx             # Root component
 │       ├── index.tsx           # Entry point
@@ -417,6 +418,8 @@ retrograde/
 │       │   └── index.tsx       # SVG icon components
 │       └── types/
 │           └── electron.d.ts   # Type declarations
+├── jadx/                       # Bundled jadx decompiler
+├── jre/                        # Bundled Java Runtime
 ├── design/                     # Design assets
 ├── package.json
 ├── tsconfig.json              # Main process TypeScript config
@@ -433,17 +436,41 @@ retrograde/
 
 ---
 
+## Third-Party Licenses
+
+RetroGrade bundles the following open-source components:
+
+### jadx - Dex to Java Decompiler
+- **Copyright**: 2018 skylot
+- **License**: Apache License 2.0
+- **Website**: https://github.com/skylot/jadx
+- **Usage**: DEX bytecode to Java source code decompilation
+
+### Eclipse Temurin - Java Runtime Environment
+- **Copyright**: Eclipse Adoptium
+- **License**: GNU General Public License, version 2, with Classpath Exception (GPLv2+CE)
+- **Website**: https://adoptium.net/
+- **Usage**: Java runtime for executing jadx
+
+### Monaco Editor
+- **Copyright**: Microsoft Corporation
+- **License**: MIT License
+- **Website**: https://microsoft.github.io/monaco-editor/
+- **Usage**: Code viewing and syntax highlighting
+
+### Electron
+- **Copyright**: Electron contributors, GitHub Inc.
+- **License**: MIT License
+- **Website**: https://www.electronjs.org/
+- **Usage**: Cross-platform desktop application framework
+
+Full license texts can be found in the [LICENSE](LICENSE) file.
+
+---
+
 ## Credits
 
 **Developer**: [Luncan Alex](https://www.linkedin.com/in/alexluncan/)
-
-**Open Source Dependencies:**
-- Electron
-- React
-- Monaco Editor
-- Zustand
-- JSZip
-- jadx (optional external dependency)
 
 ---
 

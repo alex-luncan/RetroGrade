@@ -2,6 +2,7 @@ import { app, BrowserWindow, ipcMain, dialog, shell } from 'electron';
 import * as path from 'path';
 import * as fs from 'fs';
 import { DecompilerService } from './decompiler';
+import { parseAXML, isBinaryXml } from './axmlParser';
 
 let mainWindow: BrowserWindow | null = null;
 let decompilerService: DecompilerService;
@@ -44,10 +45,8 @@ function createWindow(): void {
   const rendererPath = path.join(__dirname, '../renderer/index.html');
   mainWindow.loadFile(rendererPath);
 
-  // Open DevTools in development
-  if (process.env.NODE_ENV === 'development') {
-    mainWindow.webContents.openDevTools();
-  }
+  // DevTools disabled for production
+  // mainWindow.webContents.openDevTools();
 
   mainWindow.on('closed', () => {
     mainWindow = null;
@@ -60,7 +59,14 @@ function initServices(): void {
     ? path.join(process.resourcesPath, 'jadx')
     : path.join(__dirname, '../../jadx');
 
-  decompilerService = new DecompilerService(jadxPath);
+  const jrePath = app.isPackaged
+    ? path.join(process.resourcesPath, 'jre')
+    : path.join(__dirname, '../../jre');
+
+  console.log('jadx path:', jadxPath);
+  console.log('JRE path:', jrePath);
+
+  decompilerService = new DecompilerService(jadxPath, jrePath);
 }
 
 // IPC Handlers
@@ -111,9 +117,43 @@ ipcMain.handle('decompile:start', async (event, apkPath: string) => {
 
 ipcMain.handle('file:read', async (event, filePath: string) => {
   try {
-    const content = await fs.promises.readFile(filePath, 'utf-8');
+    console.log('Reading file:', filePath);
+
+    // Check if file exists
+    if (!fs.existsSync(filePath)) {
+      console.log('File does not exist:', filePath);
+      return { success: false, error: `File not found: ${filePath}` };
+    }
+
+    // Check file extension for binary files
+    const ext = path.extname(filePath).toLowerCase();
+    const binaryExtensions = ['.bin', '.png', '.jpg', '.jpeg', '.gif', '.ico', '.webp', '.bmp', '.so', '.dex', '.arsc', '.apk', '.zip', '.jar'];
+
+    if (binaryExtensions.includes(ext)) {
+      return { success: true, content: `[Binary file: ${ext}]\n\nThis file cannot be displayed as text.` };
+    }
+
+    // Read file as buffer first to check for binary XML
+    const buffer = await fs.promises.readFile(filePath);
+
+    // Check if it's a binary XML file (Android AXML format)
+    if (ext === '.xml' && isBinaryXml(buffer)) {
+      console.log('Detected binary XML, decoding...');
+      const decoded = parseAXML(buffer);
+      if (decoded) {
+        console.log('Binary XML decoded successfully');
+        return { success: true, content: decoded };
+      } else {
+        return { success: true, content: '<!-- Failed to decode binary XML -->\n<!-- This file is in Android binary XML format -->' };
+      }
+    }
+
+    // Try to read as UTF-8 text
+    const content = buffer.toString('utf-8');
+    console.log('File read successfully, length:', content.length);
     return { success: true, content };
   } catch (error) {
+    console.error('Error reading file:', error);
     return { success: false, error: (error as Error).message };
   }
 });

@@ -32,10 +32,12 @@ export interface DecompileResult {
 
 export class DecompilerService {
   private jadxPath: string;
+  private jrePath: string;
   private tempDir: string;
 
-  constructor(jadxPath: string) {
+  constructor(jadxPath: string, jrePath: string) {
     this.jadxPath = jadxPath;
+    this.jrePath = jrePath;
     this.tempDir = path.join(os.tmpdir(), 'retrograde');
   }
 
@@ -130,10 +132,22 @@ export class DecompilerService {
       ? path.join(this.jadxPath, 'bin', 'jadx.bat')
       : path.join(this.jadxPath, 'bin', 'jadx');
 
+    const javaBin = process.platform === 'win32'
+      ? path.join(this.jrePath, 'bin', 'java.exe')
+      : path.join(this.jrePath, 'bin', 'java');
+
     try {
-      await fs.promises.access(jadxBin, fs.constants.X_OK);
+      // Check if jadx binary exists
+      await fs.promises.access(jadxBin);
+      console.log('jadx found at:', jadxBin);
+
+      // Check if bundled JRE exists
+      await fs.promises.access(javaBin);
+      console.log('Bundled JRE found at:', javaBin);
+
       return true;
-    } catch {
+    } catch (err) {
+      console.log('jadx or JRE not available:', err);
       return false;
     }
   }
@@ -147,13 +161,27 @@ export class DecompilerService {
       ? path.join(this.jadxPath, 'bin', 'jadx.bat')
       : path.join(this.jadxPath, 'bin', 'jadx');
 
+    // Set up environment with bundled JRE
+    const env = { ...process.env };
+    env.JAVA_HOME = this.jrePath;
+
+    // Add bundled JRE to PATH (prepend so it's used first)
+    const jreBinPath = path.join(this.jrePath, 'bin');
+    env.PATH = jreBinPath + (process.platform === 'win32' ? ';' : ':') + (env.PATH || '');
+
+    console.log('Running jadx with JAVA_HOME:', env.JAVA_HOME);
+
     return new Promise((resolve, reject) => {
       const jadx = spawn(jadxBin, [
         '-d', outputDir,
         '--show-bad-code',
         '--no-debug-info',
         apkPath
-      ]);
+      ], {
+        shell: true,
+        windowsHide: true,
+        env
+      });
 
       let progress = 40;
 
@@ -222,12 +250,13 @@ export class DecompilerService {
     await fs.promises.writeFile(readmePath,
       `RetroGrade APK Decompiler
 
-This APK was extracted but full DEX decompilation requires jadx to be installed.
+This APK was extracted but full DEX decompilation requires Java Runtime Environment (JRE).
 
 To enable full Java source code decompilation:
-1. Download jadx from: https://github.com/skylot/jadx/releases
-2. Extract to the 'jadx' folder in the RetroGrade installation directory
-3. Restart RetroGrade and try again
+1. Install Java from: https://adoptium.net/ (Eclipse Temurin recommended)
+   Or from: https://www.oracle.com/java/technologies/downloads/
+2. Make sure 'java' is in your system PATH
+3. Restart RetroGrade and try decompiling again
 
 For now, the following resources have been extracted:
 - AndroidManifest.xml
@@ -241,7 +270,7 @@ You can view these files in the file tree on the left.
     onProgress({
       stage: 'decompiling',
       percent: 85,
-      message: 'Extracted resources (jadx not available for full decompilation)'
+      message: 'Extracted resources (Java not installed - install JRE for full decompilation)'
     });
   }
 

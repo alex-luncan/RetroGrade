@@ -54,7 +54,10 @@ const TreeNode: React.FC<TreeNodeProps> = ({ node, depth }) => {
       toggleFolder(node.path);
     } else {
       // Load file content
+      console.log('Opening file:', node.path);
       const result = await window.electronAPI.readFile(node.path);
+      console.log('File read result:', result);
+
       if (result.success && result.content !== undefined) {
         const ext = node.extension?.toLowerCase();
         let language = 'plaintext';
@@ -83,6 +86,16 @@ const TreeNode: React.FC<TreeNodeProps> = ({ node, depth }) => {
           name: node.name,
           content: result.content,
           language,
+          isDirty: false
+        });
+      } else {
+        console.error('Failed to read file:', result.error);
+        // Still open the file but show the error
+        openFile({
+          path: node.path,
+          name: node.name,
+          content: `Error reading file: ${result.error || 'Unknown error'}`,
+          language: 'plaintext',
           isDirty: false
         });
       }

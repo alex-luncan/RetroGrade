@@ -10,7 +10,7 @@
   },
   "license": "MIT",
   "scripts": {
-    "start": "npm run build && electron .",
+    "start": "npm run build:all && electron .",
     "build": "tsc",
     "build:renderer": "webpack --config webpack.renderer.config.js",
     "build:all": "npm run build && npm run build:renderer",

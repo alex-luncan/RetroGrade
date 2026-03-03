@@ -3,22 +3,22 @@ import * as monaco from 'monaco-editor';
 import { useAppStore } from '../store/appStore';
 import { CloseIcon, FileIcon } from '../icons';
 
-// Configure Monaco workers
-self.MonacoEnvironment = {
+// Configure Monaco environment - workers are handled by MonacoWebpackPlugin
+(self as any).MonacoEnvironment = {
   getWorkerUrl: function (_moduleId: string, label: string) {
     if (label === 'json') {
-      return './json.worker.bundle.js';
+      return './json.worker.js';
     }
     if (label === 'css' || label === 'scss' || label === 'less') {
-      return './css.worker.bundle.js';
+      return './css.worker.js';
     }
     if (label === 'html' || label === 'handlebars' || label === 'razor') {
-      return './html.worker.bundle.js';
+      return './html.worker.js';
     }
     if (label === 'typescript' || label === 'javascript') {
-      return './ts.worker.bundle.js';
+      return './ts.worker.js';
     }
-    return './editor.worker.bundle.js';
+    return './editor.worker.js';
   }
 };
 
@@ -66,8 +66,10 @@ const CodeEditor: React.FC = () => {
   // Initialize Monaco editor
   useEffect(() => {
     if (editorRef.current && !monacoRef.current) {
+      console.log('Creating Monaco editor, container size:', editorRef.current.offsetWidth, 'x', editorRef.current.offsetHeight);
+
       monacoRef.current = monaco.editor.create(editorRef.current, {
-        value: '',
+        value: '// Select a file to view its contents',
         language: 'java',
         theme: 'retrograde',
         automaticLayout: true,
@@ -85,6 +87,11 @@ const CodeEditor: React.FC = () => {
         cursorSmoothCaretAnimation: 'on',
         padding: { top: 16 },
       });
+
+      // Force initial layout
+      setTimeout(() => {
+        monacoRef.current?.layout();
+      }, 100);
     }
 
     return () => {
@@ -96,13 +103,27 @@ const CodeEditor: React.FC = () => {
   // Update editor content when active file changes
   useEffect(() => {
     if (monacoRef.current && activeFile) {
-      const model = monaco.editor.createModel(
-        activeFile.content,
-        activeFile.language
+      console.log('Setting editor content for:', activeFile.name, 'content length:', activeFile.content?.length);
+
+      // Dispose of old model to prevent memory leaks
+      const oldModel = monacoRef.current.getModel();
+
+      // Create new model with the file content
+      const newModel = monaco.editor.createModel(
+        activeFile.content || '// No content',
+        activeFile.language || 'plaintext'
       );
-      monacoRef.current.setModel(model);
+      monacoRef.current.setModel(newModel);
+
+      // Dispose old model after setting new one
+      if (oldModel) {
+        oldModel.dispose();
+      }
+
+      // Force layout update
+      monacoRef.current.layout();
     }
-  }, [activeFile]);
+  }, [activeFile?.path, activeFile?.content]);
 
   const handleTabClick = (path: string) => {
     setActiveFile(path);
@@ -135,10 +156,13 @@ const CodeEditor: React.FC = () => {
         ))}
       </div>
 
-      {/* Editor Content */}
-      {openFiles.length > 0 ? (
-        <div className="editor-content" ref={editorRef} />
-      ) : (
+      {/* Editor Content - always mounted for Monaco to work */}
+      <div
+        className="editor-content"
+        ref={editorRef}
+        style={{ display: openFiles.length > 0 ? 'block' : 'none' }}
+      />
+      {openFiles.length === 0 && (
         <div className="editor-placeholder">
           <div className="editor-placeholder-icon">
             <FileIcon size={64} color="var(--white-10)" />

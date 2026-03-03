@@ -46,8 +46,8 @@ yarn-error.log*
 *.temp
 .cache/
 
-# jadx binaries (download separately)
-jadx/
+# jadx binaries are now bundled with the project
+# jadx/
 
 # Coverage
 coverage/

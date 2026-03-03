@@ -53,6 +53,37 @@ const AboutPanel: React.FC = () => {
               LinkedIn
             </a>
           </div>
+
+          <div className="about-credits">
+            <div className="about-credits-title">Powered by</div>
+            <div className="about-credits-item">
+              <a
+                href="#"
+                onClick={handleLinkClick('https://github.com/skylot/jadx')}
+              >
+                jadx
+              </a>
+              {' - Dex to Java decompiler by skylot (Apache 2.0)'}
+            </div>
+            <div className="about-credits-item">
+              <a
+                href="#"
+                onClick={handleLinkClick('https://microsoft.github.io/monaco-editor/')}
+              >
+                Monaco Editor
+              </a>
+              {' - Code editor by Microsoft (MIT)'}
+            </div>
+            <div className="about-credits-item">
+              <a
+                href="#"
+                onClick={handleLinkClick('https://adoptium.net/')}
+              >
+                Eclipse Temurin
+              </a>
+              {' - Java Runtime Environment (GPLv2+CE)'}
+            </div>
+          </div>
         </div>
       </div>
     </>

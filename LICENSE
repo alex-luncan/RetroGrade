@@ -19,3 +19,60 @@ AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER
 LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM,
 OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
 SOFTWARE.
+
+================================================================================
+
+THIRD-PARTY LICENSES AND ATTRIBUTIONS
+
+================================================================================
+
+jadx - Dex to Java Decompiler
+--------------------------------------------------------------------------------
+Copyright 2018 skylot
+Licensed under the Apache License, Version 2.0
+
+RetroGrade bundles jadx (https://github.com/skylot/jadx) for DEX bytecode
+decompilation. jadx is used to convert Android Dalvik bytecode back to
+readable Java source code.
+
+The full Apache 2.0 license text for jadx can be found in:
+  jadx/LICENSE
+
+Website: https://github.com/skylot/jadx
+
+--------------------------------------------------------------------------------
+
+Monaco Editor
+--------------------------------------------------------------------------------
+Copyright (c) Microsoft Corporation
+Licensed under the MIT License
+
+RetroGrade uses Monaco Editor for code viewing and syntax highlighting.
+
+Website: https://microsoft.github.io/monaco-editor/
+
+--------------------------------------------------------------------------------
+
+Electron
+--------------------------------------------------------------------------------
+Copyright (c) Electron contributors
+Copyright (c) GitHub Inc.
+Licensed under the MIT License
+
+Website: https://www.electronjs.org/
+
+--------------------------------------------------------------------------------
+
+Eclipse Temurin (Java Runtime)
+--------------------------------------------------------------------------------
+Eclipse Temurin is the open source Java SE build based upon OpenJDK.
+
+Licensed under the GNU General Public License, version 2, with the
+Classpath Exception (GPLv2+CE).
+
+RetroGrade bundles Eclipse Temurin JRE to provide Java runtime for
+jadx decompilation without requiring users to install Java separately.
+
+Website: https://adoptium.net/
+
+--------------------------------------------------------------------------------
