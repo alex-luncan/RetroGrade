@@ -1,6 +1,5 @@
-
-# Design source files (not for distribution)
-design/
+# Private local files (not for distribution)
+private/
 
 # Windows artifacts
 nul
