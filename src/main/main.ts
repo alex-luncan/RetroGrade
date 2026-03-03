@@ -7,23 +7,37 @@ let mainWindow: BrowserWindow | null = null;
 let decompilerService: DecompilerService;
 
 function createWindow(): void {
+  const isMac = process.platform === 'darwin';
+  const isWin = process.platform === 'win32';
+
   mainWindow = new BrowserWindow({
     width: 1400,
     height: 900,
     minWidth: 900,
     minHeight: 600,
     frame: false,
-    transparent: true,
-    vibrancy: 'under-window',
-    visualEffectState: 'active',
-    backgroundColor: '#00000000',
-    titleBarStyle: 'hidden',
+    transparent: false,
+    backgroundColor: '#1a1a2e',
+    ...(isMac && {
+      vibrancy: 'under-window',
+      visualEffectState: 'active',
+      transparent: true,
+      backgroundColor: '#00000000',
+    }),
+    titleBarStyle: isMac ? 'hidden' : 'default',
     trafficLightPosition: { x: 16, y: 16 },
+    show: false,
     webPreferences: {
       nodeIntegration: false,
       contextIsolation: true,
       preload: path.join(__dirname, 'preload.js')
     }
+  });
+
+  // Show window when ready to prevent visual flash
+  mainWindow.once('ready-to-show', () => {
+    mainWindow?.show();
+    mainWindow?.focus();
   });
 
   // Load the renderer
