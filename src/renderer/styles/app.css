@@ -1,0 +1,265 @@
+/* App Container */
+.app-container {
+  width: 100%;
+  height: 100vh;
+  display: flex;
+  flex-direction: column;
+  border-radius: 12px;
+  overflow: hidden;
+}
+
+.app-content {
+  flex: 1;
+  display: flex;
+  overflow: hidden;
+}
+
+/* Title Bar */
+.titlebar {
+  height: 40px;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  padding: 0 16px;
+  background: var(--opaque-bg);
+  border-bottom: 1px solid var(--glass-border);
+  -webkit-app-region: drag;
+}
+
+.titlebar-left {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+}
+
+.traffic-lights {
+  display: flex;
+  gap: 8px;
+  -webkit-app-region: no-drag;
+}
+
+.traffic-light {
+  width: 12px;
+  height: 12px;
+  border-radius: 50%;
+  cursor: pointer;
+  transition: opacity var(--transition-fast);
+}
+
+.traffic-light:hover {
+  opacity: 0.8;
+}
+
+.traffic-light.close {
+  background: #FF5F57;
+}
+
+.traffic-light.minimize {
+  background: #FEBC2E;
+}
+
+.traffic-light.maximize {
+  background: #28C840;
+}
+
+.titlebar-title {
+  font-size: 13px;
+  font-weight: 500;
+  color: var(--white-80);
+}
+
+.titlebar-center {
+  position: absolute;
+  left: 50%;
+  transform: translateX(-50%);
+}
+
+.titlebar-right {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+}
+
+/* Home Screen */
+.home-screen {
+  flex: 1;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  padding: 40px;
+}
+
+.home-content {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  text-align: center;
+  max-width: 480px;
+}
+
+.home-logo {
+  margin-bottom: 24px;
+}
+
+.home-title {
+  font-size: 32px;
+  font-weight: 600;
+  margin: 0 0 8px 0;
+  color: var(--white);
+}
+
+.home-subtitle {
+  font-size: 16px;
+  color: var(--white-80);
+  margin: 0 0 32px 0;
+}
+
+/* Drop Zone */
+.drop-zone {
+  width: 100%;
+  padding: 48px;
+  border: 2px dashed var(--white-40);
+  border-radius: 16px;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  cursor: pointer;
+  transition: all var(--transition-normal);
+  background: var(--white-05);
+}
+
+.drop-zone:hover {
+  border-color: var(--primary);
+  background: rgba(0, 188, 212, 0.1);
+}
+
+.drop-zone.dragging {
+  border-color: var(--primary);
+  background: rgba(0, 188, 212, 0.2);
+  transform: scale(1.02);
+}
+
+.drop-zone-icon {
+  margin-bottom: 16px;
+  opacity: 0.8;
+}
+
+.drop-zone-text {
+  font-size: 16px;
+  color: var(--white-80);
+  margin: 0 0 8px 0;
+}
+
+.drop-zone-hint {
+  font-size: 13px;
+  color: var(--white-40);
+  margin: 0;
+}
+
+.or-divider {
+  margin: 24px 0;
+  color: var(--white-40);
+  font-size: 13px;
+}
+
+.browse-button {
+  padding: 12px 24px;
+  background: var(--primary);
+  color: var(--white);
+  border-radius: 8px;
+  font-size: 14px;
+  font-weight: 500;
+  transition: all var(--transition-fast);
+}
+
+.browse-button:hover {
+  background: #00ACC1;
+  transform: translateY(-1px);
+}
+
+/* Progress Overlay */
+.progress-overlay {
+  position: absolute;
+  inset: 0;
+  background: rgba(0, 0, 0, 0.8);
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  z-index: 100;
+}
+
+.progress-content {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 24px;
+}
+
+.progress-spinner {
+  width: 48px;
+  height: 48px;
+  border: 3px solid var(--white-10);
+  border-top-color: var(--primary);
+  border-radius: 50%;
+  animation: spin 1s linear infinite;
+}
+
+@keyframes spin {
+  to {
+    transform: rotate(360deg);
+  }
+}
+
+.progress-bar-container {
+  width: 300px;
+}
+
+.progress-bar {
+  height: 4px;
+  background: var(--white-10);
+  border-radius: 2px;
+  overflow: hidden;
+}
+
+.progress-bar-fill {
+  height: 100%;
+  background: var(--primary);
+  transition: width var(--transition-fast);
+}
+
+.progress-text {
+  font-size: 14px;
+  color: var(--white-80);
+  text-align: center;
+}
+
+/* Error Message */
+.error-message {
+  margin-top: 16px;
+  padding: 12px 16px;
+  background: rgba(244, 67, 54, 0.2);
+  border: 1px solid rgba(244, 67, 54, 0.5);
+  border-radius: 8px;
+  color: #F44336;
+  font-size: 13px;
+}
+
+/* Attribution */
+.attribution {
+  position: fixed;
+  bottom: 16px;
+  right: 16px;
+  font-size: 12px;
+  color: var(--white-40);
+}
+
+.attribution a {
+  color: var(--primary);
+  text-decoration: none;
+}
+
+.attribution a:hover {
+  text-decoration: underline;
+}
