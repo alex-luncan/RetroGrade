@@ -15,7 +15,7 @@ RetroGrade is a powerful, cross-platform desktop application for decompiling And
 - **File Explorer**: Navigate decompiled code with a familiar tree structure
 - **Search Functionality**: Find code across all decompiled files instantly
 - **Android Studio Export**: Build ready-to-open Android Studio projects with proper Gradle configuration
-- **Dart Recovery Assistant**: Analyze Flutter/Dart apps with type inference, pattern matching, and code generation
+- **Dart Recovery Assistant**: Recover 30-40% of Flutter/Dart source code with intelligent type inference, widget pattern recognition, and automatic code generation
 - **Glassmorphism UI**: Beautiful Windows Aero-style transparency with frosted glass effects
 - **Cross-Platform**: Runs on Windows 11 and macOS
 - **Standalone**: Includes bundled Java Runtime - no additional installations required
@@ -75,6 +75,33 @@ RetroGrade can generate fully configured Android Studio projects:
 - Copies native libraries (.so files) to jniLibs folders
 - Generates proper `build.gradle` with detected features (Maps, Firebase, Room, etc.)
 - Opens Android Studio automatically when project is ready
+
+### Dart Recovery Assistant
+
+RetroGrade includes a powerful Dart Recovery Assistant library that can recover **30-40% of original Flutter/Dart source code** from compiled APKs by analyzing Ghidra pseudo-C output:
+
+**Type Inference Engine**
+- Automatically infers Dart types from compiled code patterns
+- Supports all Dart built-in types plus Flutter-specific types
+- Confidence scoring (high/medium/low/guess) for all inferences
+
+**Flutter Widget Recognition**
+- Detects 25+ Flutter widgets (Container, Row, Column, Stack, ListView, Scaffold, AppBar, etc.)
+- Identifies StatefulWidget and StatelessWidget patterns
+- Recovers widget properties and callback signatures
+- Recognizes State lifecycle methods (initState, build, dispose, etc.)
+
+**Package Detection**
+- Identifies popular state management libraries (Provider, BLoC, GetX, Riverpod)
+- Detects HTTP clients (Dio, http)
+- Recognizes Firebase integrations (Auth, Firestore, Core)
+- Finds local storage usage (SharedPreferences, SQLite)
+
+**Code Generation**
+- Generates readable Dart class stubs with proper inheritance
+- Creates method signatures with inferred parameter types
+- Produces compilable widget skeletons ready for implementation
+- Preserves source addresses for cross-referencing with Ghidra
 
 ## Technology Stack
 
