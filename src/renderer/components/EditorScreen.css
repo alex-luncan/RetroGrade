@@ -9,33 +9,17 @@
 /* Sidebar */
 .sidebar {
   width: var(--sidebar-width);
-  background: linear-gradient(
-    180deg,
-    rgba(40, 40, 55, 0.95) 0%,
-    rgba(30, 30, 45, 0.92) 100%
-  );
-  backdrop-filter: blur(20px) saturate(180%);
-  -webkit-backdrop-filter: blur(20px) saturate(180%);
-  border-right: 1px solid var(--glass-border);
-  box-shadow: inset 1px 0 0 0 rgba(255, 255, 255, 0.03);
+  background: rgba(25, 25, 45, 0.80);
+  backdrop-filter: blur(20px);
+  -webkit-backdrop-filter: blur(20px);
+  border-right: 1px solid rgba(255, 255, 255, 0.08);
   display: flex;
   flex-direction: column;
   align-items: center;
   padding: 12px 0;
   gap: 8px;
   position: relative;
-}
-
-.sidebar::before {
-  content: '';
-  position: absolute;
-  inset: 0;
-  background: linear-gradient(
-    135deg,
-    rgba(255, 255, 255, 0.03) 0%,
-    transparent 50%
-  );
-  pointer-events: none;
+  z-index: 5;
 }
 
 .sidebar-btn {
@@ -66,33 +50,15 @@
 /* Panel Area */
 .panel-area {
   width: var(--panel-width);
-  background: linear-gradient(
-    180deg,
-    rgba(45, 45, 60, 0.92) 0%,
-    rgba(35, 35, 50, 0.88) 100%
-  );
-  backdrop-filter: blur(25px) saturate(180%);
-  -webkit-backdrop-filter: blur(25px) saturate(180%);
-  border-right: 1px solid var(--glass-border);
-  box-shadow:
-    inset 1px 0 0 0 rgba(255, 255, 255, 0.04),
-    inset 0 1px 0 0 rgba(255, 255, 255, 0.02);
+  background: rgba(28, 28, 48, 0.80);
+  backdrop-filter: blur(20px);
+  -webkit-backdrop-filter: blur(20px);
+  border-right: 1px solid rgba(255, 255, 255, 0.08);
   display: flex;
   flex-direction: column;
   overflow: hidden;
   position: relative;
-}
-
-.panel-area::before {
-  content: '';
-  position: absolute;
-  inset: 0;
-  background: linear-gradient(
-    135deg,
-    rgba(255, 255, 255, 0.02) 0%,
-    transparent 40%
-  );
-  pointer-events: none;
+  z-index: 4;
 }
 
 .panel-header {
@@ -119,8 +85,10 @@
   flex: 1;
   display: flex;
   flex-direction: column;
-  background: var(--opaque-bg);
+  background: rgba(22, 22, 38, 0.92);
   overflow: hidden;
+  position: relative;
+  z-index: 2;
 }
 
 /* Tab Bar */
@@ -128,16 +96,13 @@
   height: 36px;
   display: flex;
   align-items: stretch;
-  background: linear-gradient(
-    180deg,
-    rgba(50, 50, 65, 0.9) 0%,
-    rgba(40, 40, 55, 0.85) 100%
-  );
-  backdrop-filter: blur(20px) saturate(150%);
-  -webkit-backdrop-filter: blur(20px) saturate(150%);
-  border-bottom: 1px solid var(--glass-border);
-  box-shadow: inset 0 1px 0 0 rgba(255, 255, 255, 0.03);
+  background: rgba(30, 30, 50, 0.85);
+  backdrop-filter: blur(15px);
+  -webkit-backdrop-filter: blur(15px);
+  border-bottom: 1px solid rgba(255, 255, 255, 0.06);
   overflow-x: auto;
+  position: relative;
+  z-index: 3;
 }
 
 .tab-bar::-webkit-scrollbar {
@@ -220,16 +185,14 @@
   display: flex;
   align-items: center;
   gap: 24px;
-  background: linear-gradient(
-    180deg,
-    rgba(40, 40, 55, 0.85) 0%,
-    rgba(35, 35, 50, 0.9) 100%
-  );
+  background: rgba(25, 25, 45, 0.85);
   backdrop-filter: blur(15px);
   -webkit-backdrop-filter: blur(15px);
-  border-top: 1px solid var(--glass-border);
+  border-top: 1px solid rgba(255, 255, 255, 0.06);
   font-size: 11px;
   color: var(--white-40);
+  position: relative;
+  z-index: 3;
 }
 
 .app-info-item strong {

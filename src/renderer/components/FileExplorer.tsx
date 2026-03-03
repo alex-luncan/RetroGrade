@@ -8,7 +8,6 @@ import {
   XmlFileIcon,
   KotlinFileIcon,
   ArrowRightIcon,
-  ExportIcon,
   AndroidStudioIcon
 } from '../icons';
 
@@ -142,14 +141,6 @@ const FileExplorer: React.FC = () => {
     return unsubscribe;
   }, []);
 
-  const handleExport = useCallback(async () => {
-    const outputPath = await window.electronAPI.selectFolderDialog();
-    if (outputPath && decompileResult) {
-      // TODO: Implement actual export
-      console.log('Exporting to:', outputPath);
-    }
-  }, [decompileResult]);
-
   const handleBuildAndroidStudio = useCallback(async () => {
     if (!decompileResult || isBuilding) return;
 
@@ -197,10 +188,6 @@ const FileExplorer: React.FC = () => {
         )}
       </div>
       <div className="panel-actions">
-        <button className="export-button" onClick={handleExport} disabled={isBuilding}>
-          <ExportIcon size={16} />
-          Export Project
-        </button>
         <button
           className="export-button android-studio-btn"
           onClick={handleBuildAndroidStudio}
